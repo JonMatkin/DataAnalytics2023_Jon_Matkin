@@ -1,0 +1,43 @@
+---
+title: "Mar 21 Work"
+author: "Jon Matkin"
+date: '2023-03-21'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(readr)
+data_raw <- read_csv("EPI_Data.csv")
+```
+
+```{r}
+head(data_raw)
+```
+```{r}
+library(ISLR)
+library(MASS)
+library(boot)
+set.seed(100)
+train <- sample(392,196)
+mod1 <- lm(mpg~horsepower, data = Auto, subset = train)
+#attach(Auto)
+mse1 <- mean((mpg-predict(mod1,Auto))[-train]^2)
+mod2 <- lm(mpg~poly(horsepower,2), data=Auto, subset=train)
+mse2 <- mean((mpg-predict(mod2,Auto))[-train]^2)
+mod3 <- lm(mpg~poly(horsepower,3), data = Auto, subset = train) 
+mse3 <- mean((mpg-predict(mod3,Auto))[-train]^2)
+```
+
+```{r}
+attach(Auto)
+set.seed(200)
+cv_error10 <- rep(0,10)
+for (i in 1:10){
+  glm_fit <- glm(mpg ~ poly(horsepower,i), data=Auto)
+  cv_error10[i] <- cv.glm(Auto,glm_fit,K=10)$delta[1] 
+}
+cv_error10
+```
+
