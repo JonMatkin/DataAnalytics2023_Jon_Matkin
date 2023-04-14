@@ -1,0 +1,108 @@
+---
+title: "Lab 9 Work"
+author: "Jon Matkin"
+date: '2023-04-07'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(e1071)
+set.seed(1)
+x = matrix(rnorm(20*2),ncol=2)
+y = c(rep(-1,10),rep(1,10))
+x[y==1,] = x[y==1,]+1
+```
+
+```{r}
+x
+y
+```
+
+```{r}
+plot(x,col=(3-y))
+```
+```{r}
+data <- data.frame(x=x, y=as.factor(y))
+svmfit <- svm(y~., data=data, kernal="linear",cost=10, scale=FALSE)
+plot(svmfit,data)
+```
+
+```{r}
+svmfit$index
+summary(svmfit)
+```
+```{r}
+svmfit2 <- svm(y~., data=data, kernal="linear",cost=0.1, scale=FALSE)
+plot(svmfit2, data)
+svmfit2$index
+```
+
+
+```{r}
+set.seed(1)
+tune_out <- tune(svm, y~., data=data, kernal="linear",ranges=list(cost=c(0.001,0.01,0.1,1,5,10)))
+summary(tune_out)
+best <- tune_out$best.model
+summary(best)
+```
+
+```{r}
+xtest <- matrix(rnorm(20*2),ncol=2)
+ytest <- sample(c(-1,1),20,rep=TRUE)
+xtest[ytest==1,] = xtest[ytest==1,]+1
+test_data <- data.frame(x=xtest, y=as.factor(ytest))
+ypred <- predict(best,test_data)
+table(predict=ypred, truth = test_data$y)
+```
+
+```{r}
+svm3 <- svm(y~.,data=data, kernal="linear",cost=0.01,scale=FALSE)
+ypred <- predict(svm3,test_data)
+table(predict=ypred, truth=test_data$y)
+```
+
+```{r}
+x[y==1,]=x[yee1,]+0.5
+plot(x,col=(y+5)/2,pch=19)
+```
+
+```{r}
+data <- data.frame(x=x,y=as.factor(y))
+svm4 <- svm(y~.,data=data,kernal="linear",cost=1e5)
+summary(svm4)
+plot(svm4,data)
+```
+
+```{r}
+svm5 <- svm(y~.,data=data,kernal="linear",cost=1)
+summary(svm5)
+plot(svm5,data)
+```
+
+```{r}
+library(e1071)
+library(ISLR)
+names(Khan)
+dim(Khan$xtrain)
+dim(Khan$xtest)
+```
+
+```{r}
+length(Khan$ytrain)
+length(Khan$ytest)
+table(Khan$ytrain)
+table(Khan$ytest)
+```
+
+```{r}
+dat <- data.frame(x=Khan$xtrain, y=as.factor(Khan$ytrain))
+out <- svm(y~., data=dat, kernal="linear",cost=10)
+summary(out)
+```
+
+```{r}
+data2 <- data.frame(x=Khan$xtest, y=as.factor(Khan$ytest))
+pred <- predict(out, newdata=data2)
+table(pred, data2$y)
+```
+
